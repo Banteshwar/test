@@ -1,0 +1,262 @@
+<!-- Main -->
+<div id="main">
+    <?php if(!empty($category)){ 
+        echo '<b>'.$category[0]['title'].'<b/><br/>';
+    }?>
+    <?php if (!empty($posts)) {
+        foreach ($posts as $value) { //echo '<pre/>';print_r($value);  ?>
+            <article class="post">
+                <header>
+                    <div class="title">
+                        <h2><a href="#"><?php if (isset($value['title'])) {
+                echo $value['title'];
+            } ?></a></h2>
+<!--                        <p>Subtitle Description Comes Here</p>-->
+                    </div>
+                    <div class="meta">
+                        <time class="published" datetime="2015-10-25"><?php if (isset($value['modified_on'])) {
+                echo date('F j, Y', strtotime($value['modified_on']));
+            } ?></time>
+                        <a href="#" class="author"><span class="name"><?php if(isset($value['fname'])){echo $value['fname']; }?></span><img src="<?php echo base_url(); ?>assets/frontend/images/dummy_pp.jpg" alt="" /></a>
+                    </div>
+                </header>
+                <p><?php if (isset($value['description'])) {
+                echo substr(strip_tags($value['description']), 0, 350);
+            } ?></p>
+
+                <a href="<?php echo base_url(); ?>home/details/<?php if (isset($value['post_id'])) {
+                echo $value['post_id'] . '#';
+            } if (isset($value['image'][0]['gallery_id'])) {
+                echo $value['image'][0]['gallery_id'];
+            } ?>" class="image featured"><img src="<?php if (!empty($value['image'][0]['path'])) {
+                echo base_url() . 'uploads/' . $value['image'][0]['path'];
+            } else {
+                echo base_url() . 'assets/frontend/images/no-image.png';
+            } ?>" alt="" /></a>
+                <div class="glr_img clearfix">
+
+                        <?php if (count($value['image']) >= 3) {
+                            $count = 3;
+                        } else {
+                            $count = count($value['image']);
+                        }
+                        for ($i = 1; $i <= $count - 1; $i++) {
+                            ?>
+                        <div class="vb_img">
+                            <a href="<?php echo base_url(); ?>home/details/<?php if (isset($value['post_id'])) {
+                                echo $value['post_id'] . '#';
+                            } if (isset($value['image'][$i]['gallery_id'])) {
+                                echo $value['image'][$i]['gallery_id'];
+                            } ?>" class="image featured"><img src="<?php if (!empty($value['image'][$i]['path'])) {
+                                echo base_url() . 'uploads/thumbnail/' . $value['image'][$i]['path'];
+                            } else {
+                                echo base_url() . 'assets/frontend/images/no-image.png';
+                            } ?>" alt="" /></a>
+                        </div>
+        <?php } ?>
+        <?php if (count($value['image']) >= 4) {
+            ?>
+                        <div class="vb_img mor">
+                            <div class="txt"><a href="gallery-inner-page.html">more</a></div>
+                            <a href="<?php echo base_url(); ?>home/details/<?php if (isset($value['post_id'])) {
+                echo $value['post_id'] . '#';
+            } if (isset($value['image'][$i]['gallery_id'])) {
+                echo $value['image'][$i]['gallery_id'];
+            } ?>" class="image featured"><img src="<?php if (!empty($value['image'][$i]['path'])) {
+                echo base_url() . 'uploads/thumbnail/' . $value['image'][$i]['path'];
+            } else {
+                echo base_url() . 'assets/frontend/images/no-image.png';
+            } ?>" alt="" /></a>
+                        </div>
+        <?php } ?>
+                </div>
+                <footer>
+                    <ul class="stats">
+                        <li><a class="icon fa-share-alt tgl_sr" rel="<?php echo $value['post_id'];?>"  title="Share It">Share</a></li>
+                        <?php
+                        if (!empty($this->session->userdata["User"])) {
+                            $sesdata = $this->session->userdata["User"];
+                            $user_id = $sesdata['c_id'];
+                            $login = 1;
+                            if(isset($user_id))
+                            {
+                                if($user_id==$liked_user[0]['customer_id'])
+                                {
+                                    $cls='active';
+                                    $val=1;
+                                }else{
+                                    $cls='';$val='';
+                                    
+                                }
+                            }
+                        } else {
+                            $login = 0;
+                        }
+                        ?>
+                        <?php if ($login == 1 && !empty($cls)) { ?>
+                                            <li><a href="" value='<?php echo $val;?>' class="icon fa-heart active" id='like<?php echo $value['post_id'] ?>' title="Love It"><?php if (isset($value['like_counter'])) {
+                                echo $value['like_counter'];
+                            } ?></a></li>
+                        <?php } elseif ($login == 1) { ?>
+                                            <li><a href="" value='<?php echo $val;?>' class="icon fa-heart" id='like<?php echo $value['post_id'] ?>' title="Love It" onClick="likeFun(<?php echo $value['post_id'] ?>,<?php echo $login; ?>,<?php echo $user_id;?>)"><?php if (isset($value['like_counter'])) {
+                                echo $value['like_counter'];
+                            } ?></a></li>
+                        <?php } else { ?>
+                                            <li><a href="" value='<?php echo $val;?>' class="icon fa-heart" id='like<?php echo $value['post_id'] ?>' title="Love It" onClick="likeFun(<?php echo $value['post_id'] ?>,<?php echo $login; ?>)"><?php if (isset($value['like_counter'])) {
+                                echo $value['like_counter'];
+                            } ?></a></li>
+                        <?php } ?>
+                                        <li><a href="<?php echo $value['hyperlink']; ?>" class="icon fa-arrow-circle-right" title="Tell Me More">Tell Me More</a></li>
+                                    </ul>
+                </footer>
+                <div class="tgl_srbx" id="sahre<?php echo $value['post_id'];?>">
+                 <?php $url=base_url().'home/details/'.$value['post_id'];
+                      $text	= 'Best Portal Ever';
+                ?>
+                <div class="clearfix">
+                        <div class="ssl_alg ht"> <?php echo share_button('twitter',                array('url'=>$url, 'text'=>$text, 'via'=>'mpak666', 'type'=>'iframe'))?></div>
+                        <div class="ssl_alg"><?php echo share_button('facebook', array('url'=>$url, 'text'=>$text))?></div>
+                                                                                                <div class="so_tpt">
+                      <div class="ssl_alg ht">  <?php echo share_button('google+',               array('url'=>$url, 'text'=>$text))?></div>
+                      <div class="ssl_alg ht">  <?php echo share_button('pinterest',            array('url'=>$url, 'text'=>$text))?></div>
+                                                                                  </div>
+              
+                </div>
+
+                </div>
+            </article>
+    <?php }} else { 
+        echo "No Record Found!";
+    } ?>
+    <!-- Pagination -->
+    <?php if(!empty($posts) && count($posts)>10){?>
+    <ul class="actions pagination">
+        <!--<li><a href="" class="disabled button big">Older Post</a></li>-->
+        <li><a href="#" class="button big">Older Post</a></li>
+    </ul>
+    <?php } ?>
+</div>
+
+<div style="display: none" id="popup_bg"></div>
+<div style="display: none" id="popup">
+    <section>
+        <h3 class="center">ATGO Sign in</h3>
+        <p>Sign In ATGO Using Your Registered Email & Password</p>
+        <form method="post">
+            <div class="row uniform">
+                <div class="12u$">
+                    <input name="c_email" type="text" value="" id="demo-name" placeholder="Username">
+                </div>
+                <div class="12u$">
+                    <input name="c_password" type="password" value="" id="demo-password" placeholder="Password">
+                </div>
+                <ul class="actions fit2">
+                    <li><input type="button" value="Continue" name="commit" id="continue_button" class="button"></li>
+                </ul>                   
+                
+                <span style="color:red;display:none" id='login-error'>Invalid Login</span>   
+                
+                <div class="strike"><span>Or</span></div>                               
+                <div class="6u 12u$(xsmall)">
+                    <a href="<?php echo $login_url; ?>" class="button fb">FACEBOOK</a>
+                </div>
+                <div class="6u$ 12u$(xsmall)">
+                    <a href="<?php echo $auth;?>" class="button gp">GOOGLE</a>
+                </div>
+                <div class="12u$">
+                    <ul class="actions"><li><a href="<?php echo base_url(); ?>customer/registration">Create Account</a></li></ul>
+                </div>
+            </div>
+        </form>
+    </section>
+    <div class="clearfix">
+        <div id="skip" class="float_r">Skip</div>
+    </div>
+</div>
+
+<!-- ----- End popup ----- -->
+<script src="<?php echo base_url(); ?>assets/frontend/js/jquery.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        
+        <?php if($logged_in=='0') { ?>
+            value_or_null = (document.cookie.match(/^(?:.*;)?atgoSkipped=([^;]+)(?:.*)?$/)||[,null])[1];
+            if(value_or_null)
+            {
+                $("#popup_bg").hide();
+                $("#popup").hide();
+            }
+            else
+            {
+                $("#popup_bg").show();
+                $("#popup").show();
+            }
+            
+        <?php } else {  ?>
+            $("#popup_bg").hide();
+            $("#popup").hide();
+        <?php } ?>
+        
+        $("#skip").click(function () {
+            var date = new Date();
+            date.setTime(date.getTime()+(24*60*60*1000));
+            document.cookie = 'atgoSkipped=' + 1; + 'expires=' + date.toString(); + 'path = /';
+            $("#popup_bg").hide();
+            $("#popup").hide();
+        });
+        
+        $("#continue_button").click(function () {
+            $.ajax({//starting ajax request
+            type: "POST",
+            url: "Customer/loginAjax",
+            data: {"c_email": $("#demo-name").val(), "c_password": $("#demo-password").val()},
+            success: function (found) {
+                if(found=='no')
+                {   
+                    $('#login-error').show();
+                }
+                else
+                {
+                    window.location.href='<?php echo base_url(); ?>';
+                }
+            },
+            error: function(xhr, textStatus, errorThrown){
+            }
+        });
+        });
+  $( ".tgl_sr" ).click(function(e) {  
+      var pid=$(this).attr('rel');
+       $('#sahre'+pid).toggle('slow');
+          
+});  
+    });
+    function likeFun(post_id, login, user_id)
+    {
+        if (login == '0')
+        {
+            window.location = "<?php echo base_url() . 'customer/login'; ?>";
+            return false;
+        }
+        var countrVal = $('#like' + post_id).val();
+        if (countrVal == '')
+        {
+            var inc = 1;
+            $('#like' + post_id).val(1);
+        }
+        else {
+            inc = -1;
+            $('#like' + post_id).val('');
+        }
+        $.ajax({//starting ajax request
+            type: "POST",
+            url: "<?php echo base_url()?>home/check_count",
+            data: {"post_id": post_id, "count": inc, "user_id": user_id},
+            success: function (count) {
+                $("#like" + post_id).html(count);
+                
+            }
+        });
+    }
+   
+</script>
+

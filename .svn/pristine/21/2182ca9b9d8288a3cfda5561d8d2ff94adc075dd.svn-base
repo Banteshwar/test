@@ -1,0 +1,115 @@
+<?php
+
+defined('BASEPATH') OR exit('No direct script access allowed');
+
+class Customer extends CI_Controller {
+
+    public function index() {
+        redirect('home');
+    }
+
+    public function login() {
+        $this->load->helper('url');
+        $this->session->unset_userdata('User');
+        $this->load->view('common/header');
+        $this->load->library(array('session', 'form_validation', 'email'));
+        $data['no_msg'] = '';
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            $this->form_validation->set_rules('c_email', 'Email-id', 'trim|required|valid_email');
+            $this->form_validation->set_rules('c_password', 'Password', 'trim|required');
+            if ($this->form_validation->run() == FALSE) {
+                
+            } else {
+                $c_email = $this->input->post('c_email');
+                $c_password = md5($this->input->post('c_password'));
+
+                $c_query = $this->db->query("select * from customer where email='" . $c_email . "' and password ='" . $c_password . "' and verified='1' and status='1'");
+                if ($c_query->num_rows() > 0) {
+                    $c_result = $c_query->result_array();
+                    $c_session['User'] = array(
+                        'c_id' => $c_result[0]['user_id'],
+                        'c_name' => $c_result[0]['first_name'] . ' ' . $c_result[0]['last_name'],
+                        'c_email' => $c_result[0]['email'],
+                        'c_logged_in' => TRUE
+                    );
+
+                    $this->session->set_userdata($c_session);
+                    $this->load->helper('url');
+                    redirect('home');
+                } else {
+                    $data['no_msg'] = "user not found";
+                }
+            }
+        }
+
+        $this->load->view('login', $data);
+        $this->load->view('common/footer');
+    }
+
+    public function loginAjax() {
+        
+            $c_email = $this->input->post('c_email');
+            $c_password = md5($this->input->post('c_password'));
+
+            $c_query = $this->db->query("select * from customer where email='" . $c_email . "' and password ='" . $c_password . "' and verified='1' and status='1'");
+            if ($c_query->num_rows() > 0) {
+                $c_result = $c_query->result_array();
+                $c_session['User'] = array(
+                    'c_id' => $c_result[0]['user_id'],
+                    'c_name' => $c_result[0]['first_name'] . ' ' . $c_result[0]['last_name'],
+                    'c_email' => $c_result[0]['email'],
+                    'c_logged_in' => TRUE
+                );
+                echo 'yes';
+                $this->session->set_userdata($c_session);
+            } else {
+                echo 'no';
+                $data['no_msg'] = "user not found";
+            }
+    }
+
+    public function registration() {
+        $this->session->unset_userdata('c_id');
+        $this->session->unset_userdata('c_name');
+        $this->session->unset_userdata('c_email');
+        $this->session->unset_userdata('c_logged_in');
+        $this->load->view('common/header');
+        $this->load->model('customerfun');
+        $data['no_msg'] = '';
+        $this->load->library(array('session', 'form_validation', 'email'));
+
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+
+            //set validation rules
+            $this->form_validation->set_rules('first_name', 'First Name', 'trim|required|alpha|min_length[3]|max_length[30]');
+            $this->form_validation->set_rules('last_name', 'Last Name', 'trim|required|alpha|min_length[3]|max_length[30]');
+            $this->form_validation->set_rules('user_email', 'Email ID', 'trim|required|valid_email|is_unique[customer.email]');
+            $this->form_validation->set_rules('password', 'Password', 'trim|required');
+
+            if ($this->form_validation->run() == FALSE) {
+                
+            } else {
+                $current_date = date('Y-m-d h:i:s a', time());
+                $ins_data = array(
+                    'first_name' => $this->input->post('first_name'),
+                    'last_name' => $this->input->post('last_name'),
+                    'email' => $this->input->post('user_email'),
+                    'password' => md5(trim($this->input->post('password'))),
+                    'created_on' => $current_date,
+                    'verified' => '1'
+                );
+                $ins_customer = $this->customerfun->insert_customer($ins_data);
+                $val = $this->customerfun->sendEmail($this->input->post('user_email'));
+                redirect('home');
+            }
+        }
+        $this->load->view('registration', $data);
+        $this->load->view('common/footer');
+    }
+
+    public function logout() {
+        $this->session->unset_userdata('User');
+        redirect('home', 'refresh');
+    }
+
+}

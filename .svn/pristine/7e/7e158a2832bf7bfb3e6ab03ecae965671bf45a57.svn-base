@@ -1,0 +1,92 @@
+<!-- Main -->
+ <div id="main">
+<!-- Mini Post -->
+    <?php //echo '<pre/>';print_r($posts);
+    if(!empty($posts[0]['image'])) { foreach($posts[0]['image'] as $val) {?>
+    <article class="mini-post">
+       <header>
+            <h3><a href="#" name="<?php echo $val['gallery_id'];?>" ><?php if(isset($val['img_title'])) { echo $val['img_title'];} ?></a></h3>
+                <time class="published" datetime="2015-10-20"><?php if(isset($val['created_on'])) { echo date('F j, Y', strtotime($val['created_on']));} ?></time>
+                <a href="#" class="author"><img src="<?php echo base_url();?>assets/frontend/images/dummy_pp.jpg" alt="" /></a>
+            </header>
+                <a href="" class="image"><img src="<?php echo base_url();?>uploads/<?php echo $val['path']?>" alt="" /></a>
+            <div class="post inr_pot_sm">
+                <footer>									
+                    <ul class="stats">
+                    <li><a class="icon fa-share-alt tgl_sr" rel="<?php echo $val['gallery_id'];?>" title="Share It">Share</a></li>
+                    <?php
+                        if (!empty($this->session->userdata["User"])) {
+                            $sesdata = $this->session->userdata["User"];
+                            $user_id = $sesdata['c_id'];
+                            $login = 1;
+                            if(isset($user_id))
+                            {
+                                if($user_id==$val['customer_id'])
+                                { $cls='active';  }else{  $cls='';}
+                            }
+                        } else {$login = 0;}
+                        ?>
+                    <?php if ($login == 1 && !empty($cls)) { ?>
+                      <li><a value='' id='like<?php echo $val['gallery_id'] ?>' class="icon fa-heart" title="Love It"><?php if (isset($val['gallery_like_counter'])) {
+                                echo $val['gallery_like_counter'];} ?></a></li>
+                    <?php } elseif ($login == 1) { ?>
+                      <li><a value='' id='like<?php echo $val['gallery_id'] ?>' class="icon fa-heart" title="Love It" onClick="likeFun(<?php echo $val['gallery_id'] ?>,<?php echo $login; ?>,<?php echo $user_id?>)"><?php if (isset($val['gallery_like_counter'])) {
+                                echo $val['gallery_like_counter'];} ?></a></li>
+                    <?php }else { ?>
+                      <li><a value='' id='like<?php echo $val['gallery_id'] ?>' class="icon fa-heart" title="Love It" onClick="likeFun(<?php echo $val['gallery_id']; ?>,<?php echo $login; ?>)"><?php if (isset($val['gallery_like_counter'])) {
+                                echo $val['gallery_like_counter'];} ?></a></li>
+                    <?php } ?>
+                    <li><a href="<?php echo $posts[0]['hyperlink']; ?>" class="icon fa-arrow-circle-right" title="Tell Me More">Tell Me More </a></li>
+                    </ul>
+                </footer>
+                <div class="tgl_srbx" id="sahre<?php echo $val['gallery_id'];?>">
+                 <?php $url = 'http://engagedmediamags.com/';
+                      $text	= 'Best Rock Portal Ever';
+                ?>
+                <p>
+                        <?php echo share_button('twitter',	array('url'=>$url, 'text'=>$text, 'via'=>'mpak666', 'type'=>'iframe'))?>
+                        <?php echo share_button('facebook',	array('url'=>$url, 'text'=>$text))?>
+                        <?php echo share_button('google+',	array('url'=>$url, 'text'=>$text))?>
+                        <?php echo share_button('pinterest',	array('url'=>$url, 'text'=>$text))?>
+                </p>
+                </div>
+            </div>
+    </article>
+    <?php } }?>                     
+
+							
+</div>
+<script src="<?php echo base_url(); ?>assets/frontend/js/jquery.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $( ".tgl_sr" ).click(function(e) {  
+            var pid=$(this).attr('rel');
+              $('#sahre'+pid).toggle('slow');
+      });  
+    });	
+function likeFun(gallery_id, login, user_id)
+    { 
+        if (login =='0')
+        {
+            window.location = "<?php echo base_url() . 'customer/login'; ?>";
+            return false;
+        }
+        var countrVal = $('#like' + gallery_id).val();
+        if (countrVal == '')
+        {
+            var inc =1;
+        }
+        else {
+            inc = -1;
+        }
+//        alert(gallery_id);  alert(login);  alert(user_id); return false;
+        $.ajax({
+            type: "POST",
+            url: "<?php echo base_url()?>home/check_gallery_count",
+            data: {"gallery_id": gallery_id, "count": inc, "user_id": user_id},
+            success: function (count) { 
+                $("#like" + gallery_id).html(count);
+            }
+        });
+    }
+</script/>

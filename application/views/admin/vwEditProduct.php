@@ -1,0 +1,157 @@
+<?php
+$this->load->view('admin/vwHeader');
+?>
+<script src="<?php echo ADMIN_HTTP_ASSETS_PATH_ADMIN; ?>tinymce/tinymce.min.js"></script>
+ <script>
+
+    tinymce.init({selector: 'textarea',
+        plugins: [
+            "advlist autolink lists link image charmap print preview anchor",
+            "searchreplace visualblocks code fullscreen",
+            "insertdatetime media table contextmenu paste jbimages"
+        ],
+        toolbar: "insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image jbimages",
+        relative_urls: false,
+         
+
+    height: "300",
+    width:900
+    });
+</script>
+<script src="<?php echo ADMIN_HTTP_JS_PATH; ?>jquery.js"></script>
+ <script src="<?php echo ADMIN_HTTP_JS_PATH; ?>script.js"></script>
+   <link rel="stylesheet" type="text/css" href="<?php echo ADMIN_HTTP_CSS_PATH; ?>style.css">
+
+<div id="page-wrapper">
+
+    <div class="row">
+        <div class="col-lg-12">
+            <h1>Update Post <small>Edit setting</small></h1>
+         
+             <ol class="breadcrumb">
+                <li><a href="<?php echo base_url(); ?>admin/products"><i class="icon-dashboard"></i>post</a></li>
+                <li class="active"><i class="icon-file-alt"></i>update post</li>        
+
+
+            </ol>
+        </div>
+    </div><!-- /.row -->
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            
+            <div class="panel-body">
+                 <?php echo $this->session->flashdata('msg'); ?>
+                <?php //$attributes = array("name" => "registrationform");
+                //echo form_open("users/add_user", $attributes);?>
+                 <form class="form-signin panel" method="post" action="<?php echo base_url(); ?>admin/products/update_product" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="name">Post Name</label>
+                    <input type="hidden" value="<?php echo isset($products[0]['post_id']) && !empty($products[0]['post_id']) ? $products[0]['post_id'] : '';?>" name="post_id"> 
+                    <input class="form-control" name="title" placeholder="Product Name" type="text" value="<?php echo isset($products[0]['title']) && !empty($products[0]['title']) ? $products[0]['title'] : ''; ?>" />
+                    <span class="text-danger"><?php echo form_error('fname'); ?></span>
+                </div>
+                     
+                       <div class="form-group">
+                    <label for="name">Category Name</label>
+                    <select name="category" class="form-control" id="category">
+                        <option value="">Please Select</option>
+                        <?php foreach($categories as $category): ?>
+                        <option value="<?php echo $category['category_id']; ?>" <?php echo $products[0]['category_id']==$category['category_id']?'selected="selected"':''; ?>><?php echo $category['title']; ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                    <span class="text-danger" id="c_title"><?php echo form_error('category'); ?></span>
+                </div>
+                     
+                 <div class="form-group">
+                    <label for="name">Hyperlink</label>
+                    <input class="form-control" name="hyperlink" placeholder="Hyperlink" type="text" value="<?php echo isset($products[0]['hyperlink']) && !empty($products[0]['hyperlink']) ? $products[0]['hyperlink'] : ''; ?>" />
+                    <span class="text-danger"><?php echo form_error('hyperlink'); ?></span>
+                </div>
+                
+
+                <div class="form-group">
+                    <label for="name">Description</label>
+                      <textarea name="description"><?php echo isset($products[0]['description']) && !empty($products[0]['description']) ? $products[0]['description'] : '';     
+                    ?></textarea>
+                    <span class="text-danger"><?php echo form_error('description'); ?></span>
+                </div>
+				
+				<?php if(count($images)>0) {  ?>
+				
+				<?php   for ($i = 0; $i < count($images); $i++) { ?>
+				
+				<div class="bsform-group" id="bsfilediv<?php echo $i;?>">
+                                   <label for="name">Image &amp; Image Title <small>(850x550)</small></label>
+                                   <input type="text" placeholder="Image Title" class="form-control" id="bsimg_title" name="bsimg_title[]" value="<?php echo $images[$i]['img_title'];?>">
+								   
+								    <input type="hidden" name="bsimg_id[]" value="<?php echo $images[$i]['gallery_id'];?>" >
+									
+                                   <div class="bsabcd" id="bsabcd1"><img src="<?php echo base_url() . 'uploads/thumbnail/' . $images[$i]['path']; ?>" id="bspreviewimg1">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img id="bsimg" title="delete" src="<?php echo base_url(); ?>assets/backend/images/x.png" alt="delete" onClick="deleteImg(<?php echo $images[$i]['gallery_id'] ?>,<?php echo $i;?>);"></div>
+                                  
+                               </div>
+							   
+							   <?php } ?>
+							   
+				<?php } ?>			   
+							   
+				<div id="filediv" class="form-group">
+                                   <label for="name">Image & Image Title <small>(850x550)</small></label>
+                                   <input type="text" name="img_title[]" id="img_title" class="form-control" placeholder="Image Title" >
+                                   <input name="file[]" type="file" id="file"/> 
+                                  <span class="text-danger" id="img_upload"></span>
+                               </div>
+                              
+                               <div class="form-group">
+                                 <input type="button" id="add_more" class="upload" value="Add More Files"/>
+                                </div>
+								
+								
+                     
+                 <div class="form-group">
+                    <label for="name">Image Path</label>
+                    <input class="form-control" name="image_path" placeholder="" type="text" value="<?php echo isset($products[0]['image_path']) && !empty($products[0]['image_path']) ? $products[0]['image_path'] : ''; ?>" />
+                    <span class="text-danger"><?php echo form_error('image_path'); ?></span>
+                </div>
+                
+                
+                <div class="form-group">
+                    <label for="username">Status</label>
+                    <select name="status" class="form-control">
+                             <option value="1" <?php echo $products[0]['status']==1?'selected="selected"':''; ?>>Active</option>
+                             <option value="0" <?php echo $products[0]['status']==0?'selected="selected"':''; ?>>Inactive</option>
+                         </select>
+                </div>
+                <div class="form-group">
+                    <button name="submit" type="submit" class="btn btn-default">Update</button>
+                  
+                </div>
+               </form>
+               
+            </div>
+        </div>
+    </div>
+</div>
+   
+</div><!-- /#page-wrapper -->
+
+
+<script>
+ function deleteImg(image_id, counter)
+    {
+	$.ajax({//starting ajax request
+            type: "POST",
+            url: "<?php echo base_url()?>admin/products/delete_image",
+            data: {"image_id": image_id},
+            success: function (count) {
+                $("#bsfilediv" + counter).html('Image has been deleted');
+            }
+        });
+	}
+
+</script>
+
+<?php
+$this->load->view('admin/vwFooter');
+?>

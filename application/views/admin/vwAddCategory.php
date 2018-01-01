@@ -1,0 +1,105 @@
+<?php
+$this->load->view('admin/vwHeader');
+?>
+<script src="<?php echo ADMIN_HTTP_ASSETS_PATH_ADMIN; ?>tinymce/tinymce.min.js"></script>
+<script>
+
+    tinymce.init({selector: 'textarea',
+        plugins: [
+            "advlist autolink lists link image charmap print preview anchor",
+            "searchreplace visualblocks code fullscreen",
+            "insertdatetime media table contextmenu paste jbimages"
+        ],
+        toolbar: "insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image jbimages",
+        relative_urls: false,
+         
+
+    height: "300",
+    width:900
+    });
+</script>
+ <script src="<?php echo ADMIN_HTTP_JS_PATH; ?>jquery.js"></script>
+ <script src="<?php echo ADMIN_HTTP_JS_PATH; ?>script_category.js"></script>
+   <link rel="stylesheet" type="text/css" href="<?php echo ADMIN_HTTP_CSS_PATH; ?>style.css">
+<div id="page-wrapper">
+     <div class="row">
+        <div class="col-lg-12">
+            <h1>Add Category </h1>
+            <ol class="breadcrumb">
+                <li><a href="<?php echo base_url(); ?>admin/category"><i class="icon-dashboard"></i>Categories</a></li>
+                <li class="active"><i class="icon-file-alt"></i>create category</li>        
+
+
+            </ol>
+        </div>
+    </div><!-- /.row -->
+
+    
+<div class="row">
+    <div class="col-md-6 col-md-offset-3">
+        <?php echo $this->session->flashdata('verify_msg'); ?>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            
+            
+                 <div class="panel-body">
+                 <?php echo $this->session->flashdata('msg'); ?>
+                
+                                 <div id="maindiv">
+
+                       <div id="formdiv">
+                           
+                           <form enctype="multipart/form-data" action="" method="post">
+                  
+                               <div class="form-group">
+                                <label for="name">Category Name</label>
+                                <input class="form-control" id="cat_title" name="title" placeholder="Category Name" type="text" value="<?php echo set_value('title'); ?>" />
+                                <span class="text-danger" id="cat_error"><?php echo form_error('title'); ?></span>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="name">Description</label>
+                                 <textarea name="description"><?php echo set_value('description'); ?></textarea>
+                                <span class="text-danger"><?php echo form_error('description'); ?></span>
+                            </div>
+                            
+                               <div id="filediv" class="form-group">
+                                      <label for="subject">Category Image</label>
+                                   <input name="file[]" type="file" id="file"/>
+                                <span class="text-danger" id="img_upload"></span>
+                                 <span class="text-danger"> <?php echo form_error('file[]'); ?></span><b>Please Note:</b> Height and Width must up to 350*250.
+                               </div>
+                                
+                              
+                               
+                  
+                               <br>
+                                 <div class="form-group">
+                               <input type="submit" value="Create" name="submit" id="upload" class="upload"/>
+                               </div>
+                           </form>
+                           <br/>
+                           <br/>
+                                           <!-------Including PHP Script here------>
+                           <?php //include "upload.php"; ?>
+                       </div>
+
+                              <!-- Right side div -->
+
+                   </div>
+             
+               
+               
+            </div>
+            
+            
+        
+        </div>
+    </div>
+</div>
+</div>
+<?php $this->load->view('admin/vwFooter'); ?>

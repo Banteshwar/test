@@ -1,0 +1,86 @@
+var abc = 0; //Declaring and defining global increement variable
+
+$(document).ready(function() {
+
+//To add new input file field dynamically, on click of "Add More Files" button below function will be executed
+    $('#add_more').click(function() {
+        $(this).before($("<div/>", {id: 'filediv'}).fadeIn('slow').append(
+                $("<input/>", {name: 'img_title[]', type: 'text', id: 'img_title', class:'form-control', placeholder: 'Image title'}), 
+				$("<input/>", {name: 'file[]', type: 'file', id: 'file'}), 				
+                $("<br/><br/>")
+                ));
+    });
+
+//following function will executes on change event of file input to select different file	
+$('body').on('change', '#file', function(){
+            if (this.files && this.files[0]) {
+                 abc += 1; //increementing global variable by 1
+				
+				var z = abc - 1;
+                var x = $(this).parent().find('#previewimg' + z).remove();
+                $(this).before("<div id='abcd"+ abc +"' class='abcd'><img id='previewimg" + abc + "' src=''/></div>");
+               
+			    var reader = new FileReader();
+                reader.onload = imageIsLoaded;
+                reader.readAsDataURL(this.files[0]);
+				
+				if (document.location.hostname == "localhost")
+				{
+				var imagepath=window.location.origin+'/atomicshop/assets/backend/images/x.png';	
+				}
+				else
+				{
+				var imagepath=window.location.origin+'/assets/backend/images/x.png';	
+				}
+				
+               
+			    $(this).hide();
+                $("#abcd"+ abc).append($("<img/>", {id: 'img', src: imagepath, alt: 'delete', title: 'delete'}).click(function() {
+                $(this).parent().parent().remove();
+                }));
+            }
+        });
+
+//To preview image     
+    function imageIsLoaded(e) {
+        $('#previewimg' + abc).attr('src', e.target.result);
+    };
+
+    $('#upload').click(function(e) {
+        var name = $(":file").val();
+		//var image_title = $(":image_title").val();
+		var post_title = $("#post_title").val();
+		var category = $("#category").val();
+		var hyperlink = $("#hyperlink").val();
+        if (!name)
+        {
+			$('#img_upload').html('First Image Must Be Selected');
+            e.preventDefault();
+        }else{
+			$('#img_upload').html('');
+		}
+		
+		if (!post_title)  { $('#p_title').html('Please enter post name');
+		 e.preventDefault();
+        }else{ $('#p_title').html(''); }
+		
+		if (!category)  { $('#c_title').html('Please select category');
+		 e.preventDefault();
+        }else{ $('#c_title').html(''); }
+		
+		if (!hyperlink)  { $('#h_title').html('Please enter hyperlink');
+		 e.preventDefault();
+        }else{ $('#h_title').html(''); }
+		
+		if (!hyperlink)  { 
+		
+		var re = /^(http[s]?:\/\/){0,1}(www\.){0,1}[a-zA-Z0-9\.\-]+\.[a-zA-Z]{2,5}[\.]{0,1}/;
+        if (!re.test(hyperlink)) { 
+       $('#h_title').html('Please enter valid hyperlink');
+        e.preventDefault();
+        }
+		
+		}
+		
+    });
+});
